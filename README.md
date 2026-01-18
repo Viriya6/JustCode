@@ -84,14 +84,14 @@ Werkzeug
 
 Login using admin account (username:admin, password:admin123)
 <div>
-  <img weight=600 heigth=auto src"https://github.com/user-attachments/assets/3254cbaa-fbd6-49c4-86fe-7c9c25a892f0">
+  <img weight=600 heigth=auto src="https://github.com/user-attachments/assets/3254cbaa-fbd6-49c4-86fe-7c9c25a892f0">
 </div>
 
 > Add User
 
 Adding user using admin acocunt.
 <div>
-  <img weight=600 heigth=auto src"https://github.com/user-attachments/assets/ece1d57c-b7ae-4080-a81a-14a3aa52b8af">
+  <img weight=600 heigth=auto src="https://github.com/user-attachments/assets/ece1d57c-b7ae-4080-a81a-14a3aa52b8af">
 </div>
 
 > Create A Problem
