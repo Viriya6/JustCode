@@ -64,6 +64,11 @@ echo "Press enter to close..."
 read
 ```
 
+OR if you dont wanna do that just type
+```python
+pip install -r requirements.txt
+```
+
 ## Requirements 🔧
 Require Modules:
 ```txt
