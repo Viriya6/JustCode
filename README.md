@@ -80,21 +80,23 @@ Werkzeug
 
 ## How To 📜
 
-> Login
+* Login
 
 Login using admin account (username:admin, password:admin123)
 <div>
-  <img weight="600" heigth="auto" src="https://github.com/user-attachments/assets/3254cbaa-fbd6-49c4-86fe-7c9c25a892f0">
+  <img width="400" heigth="auto" src="https://github.com/user-attachments/assets/3254cbaa-fbd6-49c4-86fe-7c9c25a892f0">
 </div>
 
-> Add User
+
+* Add User
 
 Adding user using admin acocunt.
 <div>
-  <img weight="600" heigth="auto" src="https://github.com/user-attachments/assets/ece1d57c-b7ae-4080-a81a-14a3aa52b8af">
+  <img width="400" heigth="auto" src="https://github.com/user-attachments/assets/ece1d57c-b7ae-4080-a81a-14a3aa52b8af">
 </div>
 
-> Create A Problem
+
+* Create A Problem
 
 To create a problem you need to make a folder inside ```./problems``` folder
 ```
