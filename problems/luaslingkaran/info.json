@@ -1,7 +1,0 @@
-{
-    "title": "Luas Lingkaran Bulat Bawah",
-    "tags": ["math", "implementation"],
-    "time_limit": 1.0,
-    "description": "Pak Dengklek baru saja diangkat menjadi Ahli Lingkaran di Desa Toki. Ia diminta oleh para warga untuk menghitung luas lahan kebun mereka yang berbentuk lingkaran sempurna.\n\nDiberikan sebuah jari-jari $r$, hitunglah luasnya dengan menggunakan konstanta $\\pi = 3.14$.\n\n### FORMAT INPUT\n\nSatu baris berisi sebuah bilangan $r$ ($0 \\le r \\le 10^5$).\n\n### FORMAT OUTPUT\n\nSatu baris berisi satu bilangan bulat yang menyatakan luas lingkaran tersebut.\n\n### CONTOH INPUT/OUTPUT\n\n<div class='sample-tests'>\n  <div class='sample-test'>\n    <div class='input'><div class='sample-title'>Input</div><pre>10</pre></div>\n    <div class='output'><div class='sample-title'>Output</div><pre>314</pre></div>\n  </div>\n  <div class='sample-test'>\n    <div class='input'><div class='sample-title'>Input</div><pre>5</pre></div>\n    <div class='output'><div class='sample-title'>Output</div><pre>78</pre></div>\n  </div>\n  <div class='sample-test'>\n    <div class='input'><div class='sample-title'>Input</div><pre>2.5</pre></div>\n    <div class='output'><div class='sample-title'>Output</div><pre>19</pre></div>\n  </div>\n</div>",
-    "template": "import sys\nimport math\n\ndef hitung_luas(r):\n    # TULIS KODEMU DI SINI\n    return 0\n\nline = sys.stdin.read()\nif line:\n    r = float(line)\n    print(hitung_luas(r))"
-}
