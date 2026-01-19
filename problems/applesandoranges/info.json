@@ -1,7 +1,0 @@
-{
-    "title": "Apples And Oranges",
-    "tags": ["implementation"],
-    "time_limit": 1.0,
-    "description": "Mr. Dengklek is tidying up his harvest. He has $A$ apples and $J$ oranges in his basket. Help Mr. Dengklek calculate the total number of fruits he has in total.\n\nGiven two integers $A$ and $J$, output their sum.\n\n### FORMAT INPUT\n\nA single line containing two space-separated integers $A$ and $J$ ($0 \\le A, J \\le 1000$).\n\n### FORMAT OUTPUT\n\nA single line containing one integer representing the total number of fruits.\n\n### EXAMPLE INPUT/OUTPUT\n\n<div class='sample-tests'>\n  <div class='sample-test'>\n    <div class='input'><div class='sample-title'>Input</div><pre>33 34</pre></div>\n    <div class='output'><div class='sample-title'>Output</div><pre>67</pre></div>\n  </div>\n  <div class='sample-test'>\n    <div class='input'><div class='sample-title'>Input</div><pre>10 0</pre></div>\n    <div class='output'><div class='sample-title'>Output</div><pre>10</pre></div>\n  </div>\n</div>",
-    "template": "import sys\n\ndef total_fruits(a, j):\n    # WRITE YOUR CODE IN HERE\n    return 0\n\nline = sys.stdin.read().split()\nif len(line) == 2:\n    a = int(line[0])\n    j = int(line[1])\n    print(total_fruits(a, j))"
-}
