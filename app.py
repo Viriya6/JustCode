@@ -8,14 +8,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-static_dir = os.path.join(BASE_DIR, '..', 'static')
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-123")
+
+# Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-PROBLEMS_DIR = os.path.join(BASE_DIR, "problems")
 
+PROBLEMS_DIR = os.path.join(BASE_DIR, "problems")
 if not os.path.exists(PROBLEMS_DIR):
     os.makedirs(PROBLEMS_DIR)
 
@@ -36,7 +37,8 @@ class Submission(db.Model):
 with app.app_context():
     db.create_all()
     if not User.query.filter_by(username="admin").first():
-        db.session.add(User(username="admin", password=generate_password_hash(os.getenv("ADMIN_PASSWORD")), is_admin=True))
+        pw = os.getenv("ADMIN_PASSWORD", "admin123")
+        db.session.add(User(username="admin", password=generate_password_hash(pw), is_admin=True))
         db.session.commit()
 
 def run_judge(p_id, code):
@@ -53,7 +55,7 @@ def run_judge(p_id, code):
         tf.write(code)
         py_file = tf.name
 
-    results, final_v = [], "AC"
+    results, final_v = [], "ACCEPTED"
     try:
         in_files = sorted([f for f in os.listdir(tc_path) if f.endswith('.in')])
         for f_in in in_files:
@@ -73,7 +75,7 @@ def run_judge(p_id, code):
                 if status != "AC":
                     final_v = f"{status} on {case_name}"; break
     except subprocess.TimeoutExpired: final_v = "TLE"
-    except Exception: final_v = "System Error"
+    except Exception as e: final_v = "System Error"
     finally:
         if os.path.exists(py_file): os.remove(py_file)
     return {"verdict": final_v, "details": results}
@@ -83,11 +85,6 @@ def run_judge(p_id, code):
 def index(p_id=None):
     if 'user_id' not in session: return redirect(url_for('login'))
     return render_template('index.html', is_admin=session.get('is_admin', False))
-
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -122,6 +119,7 @@ def get_prob(p_id):
 
 @app.route('/judge', methods=['POST'])
 def judge_api():
+    if 'username' not in session: return jsonify({"error": "Unauthorized"}), 403
     d = request.json
     res = run_judge(d['id'], d['code'])
     db.session.add(Submission(username=session['username'], problem_id=d['id'], verdict=res['verdict']))
@@ -134,7 +132,7 @@ def api_status():
         if not session.get('is_admin'): return "403", 403
         Submission.query.delete(); db.session.commit()
         return jsonify({"status": "success"})
-    subs = Submission.query.order_by(Submission.timestamp.desc()).limit(20).all()
+    subs = Submission.query.order_by(Submission.timestamp.desc()).limit(30).all()
     return jsonify([{"u":s.username, "p":s.problem_id, "v":s.verdict, "t":s.timestamp.strftime("%H:%M:%S")} for s in subs])
 
 @app.route('/api/users', methods=['GET', 'POST', 'DELETE'])
@@ -142,11 +140,15 @@ def manage_users():
     if not session.get('is_admin'): return "403", 403
     if request.method == 'POST':
         d = request.json
-        db.session.add(User(username=d['username'], password=generate_password_hash(d['password'])))
+        db.session.add(User(
+            username=d['username'], 
+            password=generate_password_hash(d['password']),
+            is_admin=d.get('is_admin', False)
+        ))
         db.session.commit()
     elif request.method == 'DELETE':
         User.query.filter_by(id=request.args.get('id')).delete(); db.session.commit()
-    return jsonify([{"id": u.id, "username": u.username} for u in User.query.all()])
+    return jsonify([{"id": u.id, "username": u.username, "is_admin": u.is_admin} for u in User.query.all()])
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
