@@ -1,6 +1,6 @@
 import os, json, subprocess, tempfile
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -9,7 +9,7 @@ load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-123")
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'database.db')
@@ -20,7 +20,6 @@ PROBLEMS_DIR = os.path.join(BASE_DIR, "problems")
 if not os.path.exists(PROBLEMS_DIR):
     os.makedirs(PROBLEMS_DIR)
 
-# Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -37,7 +36,7 @@ class Submission(db.Model):
 with app.app_context():
     db.create_all()
     if not User.query.filter_by(username="admin").first():
-        pw = os.getenv("ADMIN_PASSWORD")
+        pw = os.getenv("ADMIN_PASSWORD", "admin123")
         db.session.add(User(username="admin", password=generate_password_hash(pw), is_admin=True))
         db.session.commit()
 
@@ -48,7 +47,7 @@ def run_judge(p_id, code):
     if os.path.exists(os.path.join(p_path, 'info.json')):
         with open(os.path.join(p_path, 'info.json'), 'r') as f:
             tl = float(json.load(f).get('time_limit', 2.0))
-            
+    
     if not os.path.exists(tc_path): return {"verdict": "Error: TC Missing", "details": []}
 
     with tempfile.NamedTemporaryFile(suffix=".py", mode='w', delete=False) as tf:
@@ -62,20 +61,16 @@ def run_judge(p_id, code):
             case_name = f_in.replace('.in', '')
             f_out = case_name + '.out'
             if not os.path.exists(os.path.join(tc_path, f_out)): continue
-            
             with open(os.path.join(tc_path, f_in), 'r') as fin:
                 expected = open(os.path.join(tc_path, f_out), 'r').read().strip()
                 proc = subprocess.run(['python', py_file], input=fin.read(), capture_output=True, text=True, timeout=tl)
-                
                 status = "AC"
                 if proc.returncode != 0: status = "RE"
                 elif proc.stdout.strip() != expected: status = "WA"
-                
                 results.append({"test": case_name, "status": status})
-                if status != "AC":
-                    final_v = f"{status} on {case_name}"; break
+                if status != "AC": final_v = f"{status} on {case_name}"; break
     except subprocess.TimeoutExpired: final_v = "TLE"
-    except Exception as e: final_v = "System Error"
+    except Exception: final_v = "System Error"
     finally:
         if os.path.exists(py_file): os.remove(py_file)
     return {"verdict": final_v, "details": results}
@@ -140,11 +135,7 @@ def manage_users():
     if not session.get('is_admin'): return "403", 403
     if request.method == 'POST':
         d = request.json
-        db.session.add(User(
-            username=d['username'], 
-            password=generate_password_hash(d['password']),
-            is_admin=d.get('is_admin', False)
-        ))
+        db.session.add(User(username=d['username'], password=generate_password_hash(d['password']), is_admin=d.get('is_admin', False)))
         db.session.commit()
     elif request.method == 'DELETE':
         User.query.filter_by(id=request.args.get('id')).delete(); db.session.commit()
