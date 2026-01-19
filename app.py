@@ -9,7 +9,7 @@ load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-123")
+app.secret_key = os.getenv("SECRET_KEY")
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'database.db')
@@ -37,7 +37,7 @@ class Submission(db.Model):
 with app.app_context():
     db.create_all()
     if not User.query.filter_by(username="admin").first():
-        pw = os.getenv("ADMIN_PASSWORD", "admin123")
+        pw = os.getenv("ADMIN_PASSWORD")
         db.session.add(User(username="admin", password=generate_password_hash(pw), is_admin=True))
         db.session.commit()
 
